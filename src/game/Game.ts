@@ -1,6 +1,7 @@
 // Liberapp 2019 - Tahiti Katagai
 // ゲームシーン
 
+const PIXEL_PER_METER = 1;
 const OBJECT_SIZE_PER_H = 1/7;
 
 const SAVE_KEY_BESTSCORE = "tower-bestScore";
@@ -15,6 +16,7 @@ class Game {
 
     static loadSceneGamePlay() {
         new Score();
+        new Ground();
         new Player();
         new StartMessage();
     }

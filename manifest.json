@@ -5,12 +5,14 @@
 		"libs/modules/eui/eui.js",
 		"libs/modules/assetsmanager/assetsmanager.js",
 		"libs/modules/tween/tween.js",
-		"libs/modules/promise/promise.js"
+		"libs/modules/promise/promise.js",
+		"libs/modules/physics/physics.js"
 	],
 	"game": [
 		"bin-debug/system/GameObject.js",
 		"bin-debug/system/PhysicsObject.js",
 		"bin-debug/game/Game.js",
+		"bin-debug/game/Ground.js",
 		"bin-debug/game/Player.js",
 		"bin-debug/Main.js",
 		"bin-debug/game/Block.js",

@@ -9,14 +9,16 @@ class Main extends eui.UILayer {
     }
  
     private addToStage() {
-        GameObject.initial( this.stage );
         Util.init( this );
+        GameObject.initial( this.stage );
+        PhysicsObject.prepare( PIXEL_PER_METER );
         Game.loadSceneGamePlay();
         
         egret.startTick(this.tickLoop, this);
     }
 
     tickLoop(timeStamp:number):boolean{
+        PhysicsObject.progress();
         GameObject.process();
         return false;
     }

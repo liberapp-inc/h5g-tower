@@ -9,7 +9,8 @@
 
 abstract class GameObject {
     
-    public shape:egret.Shape = null;
+    // public shape:egret.Shape = null;
+    public display:egret.DisplayObject = null;
 
     constructor() {
         GameObject.objects.push(this);
@@ -47,9 +48,9 @@ abstract class GameObject {
     protected deleteFlag;
     private delete(){
         this.onDestroy();
-        if( this.shape ){
-            GameObject.display.removeChild(this.shape);
-            this.shape = null;
+        if( this.display ){
+            GameObject.display.removeChild(this.display);
+            this.display = null;
         }
     }
 }

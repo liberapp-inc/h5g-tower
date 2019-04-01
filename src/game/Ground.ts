@@ -1,23 +1,19 @@
 // Liberapp 2019 - Tahiti Katagai
-// つみきブロック
+// 床
 
-class Block extends PhysicsObject{
+class Ground extends PhysicsObject{
 
-    static blocks:Block[] = [];
     sizeW:number;
     sizeH:number;
-    color:number;
-    readonly animFrameMax = 8;
-    animFrame:number = 0;
 
-    constructor( px:number, py:number, w:number, h:number ) {
+    constructor() {
         super();
 
-        Block.blocks.push(this);
+        const px = 0.50 * Util.width;
+        const py = 0.95 * Util.height;
+        this.sizeW = 0.6 * Util.width;
+        this.sizeH = 0.1 * Util.height;
 
-        this.sizeW = w;
-        this.sizeH = h;
-        this.color = randBool() ? BLOCK_COLOR : BLOCK_COLOR2;
         this.setDisplay( px, py );
         this.setBody( px, py );
     }
@@ -33,13 +29,14 @@ class Block extends PhysicsObject{
         
         display.x = px;
         display.y = py;
-        display.graphics.beginFill( this.color );
+        display.graphics.beginFill( FONT_COLOR );
         display.graphics.drawRect( -0.5*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
         display.graphics.endFill();
     }
 
     setBody( px:number, py:number ){
-        this.body = new p2.Body( {mass:1, force:[0,-300], position:[this.p2m(px), this.p2m(py)]} );
+        
+        this.body = new p2.Body( {position:[this.p2m(px), this.p2m(py)],type: p2.Body.STATIC} );
         const shape = new p2.Box( { width:this.sizeW, height:this.sizeH } );
         this.body.addShape(shape);
         this.body.displays = [this.display];
@@ -47,28 +44,10 @@ class Block extends PhysicsObject{
     }
 
     onDestroy(){
-        Block.blocks = Block.blocks.filter( obj => obj != this );
-
         PhysicsObject.world.removeBody(this.body);
         this.body.displays = [];
         this.body = null;
     }
 
-    fixedUpdate() {
-        this.scaleAnim();
-    }
-
-    scaleAnim(){
-        if( this.animFrame > 0 ) {
-            this.animFrame--;
-            let scale = 1 + 0.4 * this.animFrame / this.animFrameMax;
-            this.display.scaleX = this.display.scaleY = scale;
-        }
-    }
-
-    // ヒット
-    hit(){
-        this.animFrame = this.animFrameMax;
-        this.scaleAnim();
-    }
+    fixedUpdate() {}
 }
