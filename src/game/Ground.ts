@@ -49,5 +49,7 @@ class Ground extends PhysicsObject{
         this.body = null;
     }
 
-    fixedUpdate() {}
+    fixedUpdate() {
+        Camera2D.transform( this.display );
+    }
 }

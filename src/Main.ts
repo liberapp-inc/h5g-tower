@@ -1,4 +1,4 @@
-// Bound Ballz
+// Tower
 // Liberapp 2019 - Tahiti Katagai
 
 class Main extends eui.UILayer {
@@ -12,6 +12,7 @@ class Main extends eui.UILayer {
         Util.init( this );
         GameObject.initial( this.stage );
         PhysicsObject.prepare( PIXEL_PER_METER );
+        Camera2D.initial();
         Game.loadSceneGamePlay();
         
         egret.startTick(this.tickLoop, this);

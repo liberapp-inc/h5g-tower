@@ -39,7 +39,7 @@ class Block extends PhysicsObject{
     }
 
     setBody( px:number, py:number ){
-        this.body = new p2.Body( {mass:1, force:[0,-300], position:[this.p2m(px), this.p2m(py)]} );
+        this.body = new p2.Body( {gravityScale:0, mass:1, force:[0,-300], position:[this.p2m(px), this.p2m(py)]} );
         const shape = new p2.Box( { width:this.sizeW, height:this.sizeH } );
         this.body.addShape(shape);
         this.body.displays = [this.display];
@@ -55,7 +55,9 @@ class Block extends PhysicsObject{
     }
 
     fixedUpdate() {
-        this.scaleAnim();
+//        this.scaleAnim();
+
+        Camera2D.transform( this.display );
     }
 
     scaleAnim(){
@@ -66,7 +68,10 @@ class Block extends PhysicsObject{
         }
     }
 
-    // ヒット
+    drop(){
+        this.body.gravityScale = 1.0;
+    }
+
     hit(){
         this.animFrame = this.animFrameMax;
         this.scaleAnim();

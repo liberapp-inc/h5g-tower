@@ -9,7 +9,6 @@
 
 abstract class GameObject {
     
-    // public shape:egret.Shape = null;
     public display:egret.DisplayObject = null;
 
     constructor() {

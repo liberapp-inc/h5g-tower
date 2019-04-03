@@ -8,29 +8,13 @@ abstract class PhysicsObject extends GameObject {
     constructor() {
         super();
     }
-/*
-    init(){
-        this.body = new p2.Body(this.options());
-        this.addShapeToBody();
-        this.body.displays = [this.display];
-        PhysicsObject.world.addBody(this.body);
-    }
 
-    abstract options() : any;
-
-    addShapeToBody() {
-        const shape = this.createShape();
-        this.body.addShape(shape);
-    }
-
-    createShape() : p2.Shape {
-        throw new Error("createShape or addShapeToBody must be implemented");
-    }
-*/
     onDestroy() {
-        PhysicsObject.world.removeBody(this.body);
-        this.body.displays = [];
-        this.body = null;
+        if( this.body ){
+            PhysicsObject.world.removeBody(this.body);
+            this.body.displays = [];
+            this.body = null;
+        }
     }
 
     update() {
@@ -39,7 +23,7 @@ abstract class PhysicsObject extends GameObject {
             const display = this.display;
             display.x = this.px;
             display.y = this.py;
-            display.rotation = 360 - (body.angle + body.shapes[0].angle) * 180 / Math.PI;
+            display.rotation = (body.angle + body.shapes[0].angle) * 180 / Math.PI;
         }
         this.fixedUpdate();
     }
@@ -50,6 +34,7 @@ abstract class PhysicsObject extends GameObject {
     // system
     public  static world: p2.World;
     private static lastTime: number;
+    public  static deltaScale: number = 1;
 
     private static pixelPerMeter: number;
     private static meterPerPixel: number;
@@ -62,26 +47,33 @@ abstract class PhysicsObject extends GameObject {
         PhysicsObject.width  = PhysicsObject.pixelToMeter(Util.width);
         PhysicsObject.height = PhysicsObject.pixelToMeter(Util.height);
 
-        const world = new p2.World();
-        world.sleepMode = p2.World.BODY_SLEEPING;
-//      world.gravity = [0, -9.8];
-        world.gravity = [0, Util.height * 0.03];
-        PhysicsObject.world = world;
+        PhysicsObject.world = new p2.World();
+        PhysicsObject.world.sleepMode = p2.World.BODY_SLEEPING;
         PhysicsObject.lastTime = Date.now();
+        PhysicsObject.world.gravity = [0, PhysicsObject.height * 0.03];
     }
+    
     static progress(){
         const now = Date.now();
-        const delta = now - this.lastTime;
+        const delta = (now - this.lastTime) * this.deltaScale;
         this.lastTime = now;
-        PhysicsObject.world.step( 1/60, delta, 4 );
+        if( delta > 0 )
+            PhysicsObject.world.step( 1/60 * this.deltaScale, delta, 4 );
     }
 
     static pixelToMeter(pixel: number)  : number { return pixel * PhysicsObject.meterPerPixel; }
     static meterToPixel(meter: number)  : number { return meter * PhysicsObject.pixelPerMeter; }
+    
     m2p(meter: number) : number { return PhysicsObject.meterToPixel(meter); }
     p2m(pixel: number) : number { return PhysicsObject.pixelToMeter(pixel); }
-    get px():number { return this.m2p( this.mx ); }
-    get py():number { return this.m2p( this.my ); }
+
+    get px():number { return PhysicsObject.meterToPixel( this.mx ); }
+    get py():number { return PhysicsObject.meterToPixel( this.my ); }
     get mx():number { return this.body.position[0]; }
     get my():number { return this.body.position[1]; }
+    
+    set px( px:number ){ this.mx = PhysicsObject.pixelToMeter(px); }
+    set py( py:number ){ this.my = PhysicsObject.pixelToMeter(py); }
+    set mx( mx:number ){ this.body.position[0] = mx; }
+    set my( my:number ){ this.body.position[1] = my; }
 }
