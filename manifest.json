@@ -14,6 +14,7 @@
 		"bin-debug/game/Game.js",
 		"bin-debug/game/Ground.js",
 		"bin-debug/game/Player.js",
+		"bin-debug/system/Button.js",
 		"bin-debug/system/Camera.js",
 		"bin-debug/game/Block.js",
 		"bin-debug/Main.js",

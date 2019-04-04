@@ -7,29 +7,20 @@ class Player extends GameObject{
 
     state:()=>void = this.stateNone;
     step:number = 0;
-    block:Block = null;
     x:number;
     y:number;
-    touchOffsetX:number = 0;
-
-    _touchBegin:(e:egret.TouchEvent)=>void = (e: egret.TouchEvent) => { this.touchBegin(e) };
-    _touchMove:(e:egret.TouchEvent)=>void = (e: egret.TouchEvent) => { this.touchMove(e) };
-    _touchEnd:(e:egret.TouchEvent)=>void = (e: egret.TouchEvent) => { this.touchEnd(e) };
-
+    swipeButton:Button;
+    block:Block = null;
+    rotateButton:Button = null;
 
     constructor() {
         super();
 
         Player.I = this;
-        GameObject.display.stage.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this._touchBegin, this);
-        GameObject.display.stage.addEventListener(egret.TouchEvent.TOUCH_MOVE, this._touchMove, this);
-        GameObject.display.stage.addEventListener(egret.TouchEvent.TOUCH_END, this._touchEnd, this);
+        this.swipeButton = new Button(null, 0, 0, 0.5, 0.3, 1, 0.6, 0x0, 0.0, null );
     }
 
     onDestroy(){
-        GameObject.display.stage.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this._touchBegin, this);
-        GameObject.display.stage.removeEventListener(egret.TouchEvent.TOUCH_MOVE, this._touchMove, this);
-        GameObject.display.stage.removeEventListener(egret.TouchEvent.TOUCH_END, this._touchEnd, this);
         Player.I = null;
     }
 
@@ -40,6 +31,18 @@ class Player extends GameObject{
         Camera2D.scale *= 0.9999;
     }
 
+    setStateNone(){
+        this.state = this.stateNone;
+        this.step = 0;
+        if( this.block ){
+            this.block.destroy();
+            this.block = null;
+        }
+        if( this.rotateButton ){
+            this.rotateButton.destroy();
+            this.rotateButton = null;
+        }
+    }
     stateNone(){}
 
     setStateHold(){
@@ -47,10 +50,22 @@ class Player extends GameObject{
         this.x = 0.5*Util.width;
         this.y = 0.2*Util.height;
         this.block = new Block( this.x, this.y, 0.2*Util.height, 0.1*Util.height );
+        this.rotateButton = new Button("↻", Util.height/16, BACK_COLOR, 0.9, 0.9, 0.2, 0.1, FONT_COLOR, 1.0, Player.callbackRotate );
     }
     stateHold(){
+        if( this.swipeButton.touch ){
+            this.x = this.swipeButton.x;
+            this.x = Util.clamp( this.x, 0, Util.width );
+        }
         this.block.px = this.x;
         this.block.py = this.y;
+
+        if( this.swipeButton.release ){
+            this.setStateRelease();
+        }
+    }
+    static callbackRotate(){
+        Player.I.block.body.angle += Math.PI / 8;
     }
     
     setStateRelease(){
@@ -58,32 +73,13 @@ class Player extends GameObject{
         this.step = 0;
         this.block.drop();
         this.block = null;
+        this.rotateButton.destroy();
+        this.rotateButton = null;
     }
     stateRelease() {
         this.step++;
         if( this.step >= 60 * 2 ){
             this.setStateHold();
         }
-    }
-
-    // touch
-    touchBegin(e:egret.TouchEvent){
-        console.log( "touchBegine" );
-        if( this.state != this.stateHold )
-            return;
-        this.touchOffsetX = this.x - e.localX;
-    }
-    touchMove(e:egret.TouchEvent){
-        if( this.state != this.stateHold )
-            return;
-        this.x = e.localX + this.touchOffsetX;
-        this.x = Util.clamp( this.x, 0, Util.width );
-        this.touchOffsetX = this.x - e.localX;
-    }
-    touchEnd(e:egret.TouchEvent){
-        if( this.state != this.stateHold )
-            return;
-        
-        this.setStateRelease();
     }
 }

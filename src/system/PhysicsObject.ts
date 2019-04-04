@@ -3,7 +3,7 @@
 
 abstract class PhysicsObject extends GameObject {
 
-    protected body: p2.Body;
+    public body: p2.Body;
 
     constructor() {
         super();

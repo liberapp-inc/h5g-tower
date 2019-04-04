@@ -7,8 +7,6 @@ class Block extends PhysicsObject{
     sizeW:number;
     sizeH:number;
     color:number;
-    readonly animFrameMax = 8;
-    animFrame:number = 0;
 
     constructor( px:number, py:number, w:number, h:number ) {
         super();
@@ -20,6 +18,7 @@ class Block extends PhysicsObject{
         this.color = randBool() ? BLOCK_COLOR : BLOCK_COLOR2;
         this.setDisplay( px, py );
         this.setBody( px, py );
+        Camera2D.transform( this.display );
     }
 
     setDisplay( px:number, py:number ){
@@ -55,25 +54,15 @@ class Block extends PhysicsObject{
     }
 
     fixedUpdate() {
-//        this.scaleAnim();
-
-        Camera2D.transform( this.display );
-    }
-
-    scaleAnim(){
-        if( this.animFrame > 0 ) {
-            this.animFrame--;
-            let scale = 1 + 0.4 * this.animFrame / this.animFrameMax;
-            this.display.scaleX = this.display.scaleY = scale;
+        if( this.display.y >= Util.height ){
+            new GameOver();
+            Player.I.setStateNone();
+            this.destroy();
         }
+        Camera2D.transform( this.display );
     }
 
     drop(){
         this.body.gravityScale = 1.0;
-    }
-
-    hit(){
-        this.animFrame = this.animFrameMax;
-        this.scaleAnim();
     }
 }
