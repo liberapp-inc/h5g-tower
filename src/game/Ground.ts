@@ -11,7 +11,7 @@ class Ground extends PhysicsObject{
 
         const px = 0.50 * Util.width;
         const py = 0.95 * Util.height;
-        this.sizeW = 0.6 * Util.width;
+        this.sizeW = 0.8 * Util.width;
         this.sizeH = 0.1 * Util.height;
 
         this.setDisplay( px, py );
@@ -29,7 +29,7 @@ class Ground extends PhysicsObject{
         
         display.x = px;
         display.y = py;
-        display.graphics.beginFill( FONT_COLOR );
+        display.graphics.beginFill( BLOCK_COLOR3 );
         display.graphics.drawRect( -0.5*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
         display.graphics.endFill();
     }

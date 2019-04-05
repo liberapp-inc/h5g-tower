@@ -2,7 +2,7 @@
 // ゲームシーン
 
 const PIXEL_PER_METER = 1;
-const OBJECT_SIZE_PER_H = 1/7;
+const BLOCK_SIZE_PER_H = 1/10;
 
 const SAVE_KEY_BESTSCORE = "tower-bestScore";
 
@@ -15,6 +15,7 @@ const BLOCK_COLOR3 = 0x8e8d8a;
 class Game {
 
     static loadSceneGamePlay() {
+        PhysicsObject.deltaScale = 1;
         new Score();
         new Ground();
         new Player();

@@ -9,11 +9,11 @@ function randBool():boolean { return Random.I.bool(); }
 
 class Random {
 
-    static I:Random = new Random();     // singleton instance
+    static readonly max:number = 0x0fffffff;
 
-    readonly max:number = 0x0fffffff;
+    static I:Random = new Random( Math.floor( Math.random()*Random.max ) );     // singleton instance
 
-    v():number{ return (this.next() & this.max) / (this.max + 1); }         // 0以上 1未満
+    v():number{ return (this.next() & Random.max) / (Random.max + 1); }     // 0以上 1未満
     f(min:number, max:number) { return min + this.v() * (max - min); }      // min以上 max未満
     i(min:number, max:number) { return Math.floor( this.f(min, max) ); }    // min以上 max未満（整数）
     bool():boolean { return ( (this.next() & 1) != 0 ); }

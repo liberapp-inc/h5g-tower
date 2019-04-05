@@ -1,23 +1,24 @@
 // Liberapp 2019 - Tahiti Katagai
-// プレイヤーボール　重力落下
+// プレイヤー　ブロック生成〜スワイプ移動
 
 class Player extends GameObject{
 
     static I:Player = null;
 
-    state:()=>void = this.stateNone;
-    step:number = 0;
     x:number;
     y:number;
-    swipeButton:Button;
+    state:()=>void = this.stateNone;
+    step:number = 0;
     block:Block = null;
+    swipeButton:Button = null;
     rotateButton:Button = null;
 
     constructor() {
         super();
 
         Player.I = this;
-        this.swipeButton = new Button(null, 0, 0, 0.5, 0.3, 1, 0.6, 0x0, 0.0, null );
+        this.x = 0.5*Util.width;
+        this.y = 0.2*Util.height;
     }
 
     onDestroy(){
@@ -26,9 +27,6 @@ class Player extends GameObject{
 
     update() {
         this.state();
-
-        Camera2D.y -= 0.1;
-        Camera2D.scale *= 0.9999;
     }
 
     setStateNone(){
@@ -37,6 +35,10 @@ class Player extends GameObject{
         if( this.block ){
             this.block.destroy();
             this.block = null;
+        }
+        if( this.swipeButton ){
+            this.swipeButton.destroy();
+            this.swipeButton = null;
         }
         if( this.rotateButton ){
             this.rotateButton.destroy();
@@ -47,25 +49,26 @@ class Player extends GameObject{
 
     setStateHold(){
         this.state = this.stateHold;
-        this.x = 0.5*Util.width;
-        this.y = 0.2*Util.height;
-        this.block = new Block( this.x, this.y, 0.2*Util.height, 0.1*Util.height );
-        this.rotateButton = new Button("↻", Util.height/16, BACK_COLOR, 0.9, 0.9, 0.2, 0.1, FONT_COLOR, 1.0, Player.callbackRotate );
+        this.block = new Block( this.x, this.y, randI(0, 3) );
+        this.y -= this.block.sizeH * 0.5;
+        this.rotateButton = new Button("↻", Util.height/16, BACK_COLOR, 0.90, 0.05, 0.2, 0.1, FONT_COLOR, 1.0, this.onTapRotate );
+        this.swipeButton = new Button(null, 0, 0, 0.5, 0.3, 1, 0.6, 0x0, 0.0, this.onSwipeRelease );
     }
     stateHold(){
         if( this.swipeButton.touch ){
-            this.x = this.swipeButton.x;
-            this.x = Util.clamp( this.x, 0, Util.width );
+            this.block.px = Util.clamp( this.swipeButton.x, 0, Util.width );
         }
-        this.block.px = this.x;
-        this.block.py = this.y;
 
-        if( this.swipeButton.release ){
-            this.setStateRelease();
-        }
+        const camScale = Util.clamp( Util.height / (Util.height - (this.y - this.block.sizeH*2)), 0, 1 );
+        Camera2D.scale += (camScale - Camera2D.scale) * 0.1;
+        Camera2D.x = (1 - 1/Camera2D.scale) * Util.width  * 0.5;
+        Camera2D.y = (1 - 1/Camera2D.scale) * Util.height;
     }
-    static callbackRotate(){
-        Player.I.block.body.angle += Math.PI / 8;
+    onSwipeRelease = ()=>{
+        this.setStateRelease();
+    }
+    onTapRotate = ()=>{
+        this.block.body.angle += Math.PI / 4;
     }
     
     setStateRelease(){
@@ -73,8 +76,11 @@ class Player extends GameObject{
         this.step = 0;
         this.block.drop();
         this.block = null;
+        this.swipeButton.destroy();
+        this.swipeButton = null;
         this.rotateButton.destroy();
         this.rotateButton = null;
+        Score.I.addPoint(1);
     }
     stateRelease() {
         this.step++;

@@ -23,7 +23,7 @@ abstract class PhysicsObject extends GameObject {
             const display = this.display;
             display.x = this.px;
             display.y = this.py;
-            display.rotation = (body.angle + body.shapes[0].angle) * 180 / Math.PI;
+            display.rotation = body.angle * 180 / Math.PI;
         }
         this.fixedUpdate();
     }
@@ -48,9 +48,9 @@ abstract class PhysicsObject extends GameObject {
         PhysicsObject.height = PhysicsObject.pixelToMeter(Util.height);
 
         PhysicsObject.world = new p2.World();
-        PhysicsObject.world.sleepMode = p2.World.BODY_SLEEPING;
+        PhysicsObject.world.gravity = [0, PhysicsObject.height * 0.08];
         PhysicsObject.lastTime = Date.now();
-        PhysicsObject.world.gravity = [0, PhysicsObject.height * 0.03];
+        PhysicsObject.deltaScale = 1;
     }
     
     static progress(){
