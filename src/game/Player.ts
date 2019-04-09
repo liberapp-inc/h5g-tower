@@ -10,8 +10,9 @@ class Player extends GameObject{
     state:()=>void = this.stateNone;
     step:number = 0;
     block:Block = null;
-    swipeButton:Button = null;
+    blockAngle:number = 0;
     rotateButton:Button = null;
+    swipeButton:Button = null;
 
     constructor() {
         super();
@@ -19,6 +20,7 @@ class Player extends GameObject{
         Player.I = this;
         this.x = 0.5*Util.width;
         this.y = 0.2*Util.height;
+        this.block = new Block( this.x, this.y, randI(0, 3) );
     }
 
     onDestroy(){
@@ -27,6 +29,10 @@ class Player extends GameObject{
 
     update() {
         this.state();
+        const camScale = Util.clamp( Util.height / (Util.height - (this.y - BLOCK_SIZE_PER_H*Util.height*2)), 0, 1 );
+        Camera2D.scale += (camScale - Camera2D.scale) * 0.1;
+        Camera2D.x = (1 - 1/Camera2D.scale) * Util.width  * 0.5;
+        Camera2D.y = (1 - 1/Camera2D.scale) * Util.height;
     }
 
     setStateNone(){
@@ -49,26 +55,24 @@ class Player extends GameObject{
 
     setStateHold(){
         this.state = this.stateHold;
-        this.block = new Block( this.x, this.y, randI(0, 3) );
-        this.y -= this.block.sizeH * 0.5;
-        this.rotateButton = new Button("↻", Util.height/16, BACK_COLOR, 0.90, 0.05, 0.2, 0.1, FONT_COLOR, 1.0, this.onTapRotate );
-        this.swipeButton = new Button(null, 0, 0, 0.5, 0.3, 1, 0.6, 0x0, 0.0, this.onSwipeRelease );
+        this.y -= BLOCK_SIZE_PER_H * Util.height * 0.5;
+        if( !this.block ) this.block = new Block( this.x, this.y, randI(0, 3) );
+        this.blockAngle = this.block.body.angle;
+        this.swipeButton  = new Button(null, 0, 0, 0.5, 0.3, 1, 0.6, 0x0, 0.0, this.onSwipeRelease );
+        this.rotateButton = new Button("↻", Util.height/16, BACK_COLOR, 0.10, 0.10, 0.2, 0.1, FONT_COLOR, 1.0, this.onTapRotate );
     }
     stateHold(){
+        this.block.body.angle += (this.blockAngle - this.block.body.angle) * 0.2;
+
         if( this.swipeButton.touch ){
             this.block.px = Util.clamp( this.swipeButton.x, 0, Util.width );
         }
-
-        const camScale = Util.clamp( Util.height / (Util.height - (this.y - this.block.sizeH*2)), 0, 1 );
-        Camera2D.scale += (camScale - Camera2D.scale) * 0.1;
-        Camera2D.x = (1 - 1/Camera2D.scale) * Util.width  * 0.5;
-        Camera2D.y = (1 - 1/Camera2D.scale) * Util.height;
     }
     onSwipeRelease = ()=>{
         this.setStateRelease();
     }
     onTapRotate = ()=>{
-        this.block.body.angle += Math.PI / 4;
+        this.blockAngle += Math.PI / 2;
     }
     
     setStateRelease(){

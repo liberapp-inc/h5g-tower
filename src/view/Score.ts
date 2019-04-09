@@ -19,7 +19,7 @@ class Score extends GameObject{
 
         let bestScore = egret.localStorage.getItem(SAVE_KEY_BESTSCORE); // string
         if( bestScore == null ){
-            bestScore = "5";
+            bestScore = "10";
             egret.localStorage.setItem(SAVE_KEY_BESTSCORE, bestScore);
         }
         this.bestScore = parseInt( bestScore );

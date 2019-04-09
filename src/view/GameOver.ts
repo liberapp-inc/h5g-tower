@@ -4,21 +4,22 @@ class GameOver extends GameObject{
 
     textGameOver:egret.TextField = null;
     textScore:egret.TextField = null;
+    retryButton:Button = null;
 
     constructor() {
         super();
 
-        this.textGameOver = Util.newTextField("GAME OVER", Util.width / 10, FONT_COLOR, 0.5, 0.45, true, false);
+        this.textGameOver = Util.newTextField("GAME OVER", Util.width / 10, FONT_COLOR, 0.5, 0.40, true, false);
         GameObject.display.addChild( this.textGameOver );
         
         if( Score.I ){
             if( Score.I.point >= Score.I.bestScore ){
                 egret.localStorage.setItem(SAVE_KEY_BESTSCORE, Score.I.point.toFixed() ); // string
             }
-            this.textScore = Util.newTextField("SCORE : " + Score.I.point.toFixed(), Util.width / 14, FONT_COLOR, 0.5, 0.55, true, false);
+            this.textScore = Util.newTextField("SCORE : " + Score.I.point.toFixed(), Util.width / 14, FONT_COLOR, 0.5, 0.50, true, false);
             GameObject.display.addChild( this.textScore );
         }
-        GameObject.display.once(egret.TouchEvent.TOUCH_BEGIN, (e: egret.TouchEvent) => this.touchBegin(e), this);
+        this.retryButton = new Button("リトライ", Util.width/16, BACK_COLOR, 0.50, 0.65, 0.4, 0.1, FONT_COLOR, 1.0, this.onTapRetry );
     }
 
     onDestroy() {
@@ -32,10 +33,7 @@ class GameOver extends GameObject{
     
     update() { }
 
-    touchBegin(e:egret.TouchEvent){
-        GameObject.display.once(egret.TouchEvent.TOUCH_TAP, (e: egret.TouchEvent) => this.tap(e), this);
-    }
-    tap(e:egret.TouchEvent){
+    onTapRetry(){
         GameObject.transit = Game.loadSceneGamePlay;
         this.destroy();
     }

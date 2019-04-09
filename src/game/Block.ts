@@ -12,9 +12,13 @@ class Block extends PhysicsObject{
         super();
 
         Block.blocks.push(this);
-        this.sizeW = 0.1 * Util.height;
+        this.sizeW = BLOCK_SIZE_PER_H * Util.height;
         this.sizeH = this.sizeW;
-        this.color = randBool() ? BLOCK_COLOR : BLOCK_COLOR2;
+        switch( randI(0,3) ){
+            case 0: this.color = BLOCK_COLOR;   break;
+            case 1: this.color = BLOCK_COLOR2;  break;
+            case 2: this.color = BLOCK_COLOR3;  break;
+        }
         this.setDisplay( px, py, type );
         this.setBody( px, py, type );
         this.body.angle = randI(0,3) * Math.PI/2;
@@ -31,28 +35,27 @@ class Block extends PhysicsObject{
         if( this.display )
             GameObject.display.removeChild( this.display );
 
-        const display = new egret.Shape();
-        this.display = display;
-        GameObject.display.addChild(this.display);
-        GameObject.display.setChildIndex(this.display, 2);        
-        display.x = px;
-        display.y = py;
-        display.graphics.beginFill( this.color );
+        const shape = new egret.Shape();
+        this.display = shape;
+        GameObject.display.addChildAt(this.display, 1);
+        shape.x = px;
+        shape.y = py;
+        shape.graphics.beginFill( this.color );
         switch( type ){
             case 0:
-            display.graphics.drawRect( -0.5*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
+            shape.graphics.drawRect( -0.5*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
             break;
             case 1:
-            display.graphics.drawRect( -1.0*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
-            display.graphics.drawRect( +0.0*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
+            shape.graphics.drawRect( -1.0*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
+            shape.graphics.drawRect( +0.0*this.sizeW, -0.5*this.sizeH, this.sizeW, this.sizeH );
             break;
             case 2:
-            display.graphics.drawRect( -1.0*this.sizeW, -1.0*this.sizeH, this.sizeW, this.sizeH );
-            display.graphics.drawRect( +0.0*this.sizeW, -1.0*this.sizeH, this.sizeW, this.sizeH );
-            display.graphics.drawRect( +0.0*this.sizeW, +0.0*this.sizeH, this.sizeW, this.sizeH );
+            shape.graphics.drawRect( -1.0*this.sizeW, -1.0*this.sizeH, this.sizeW, this.sizeH );
+            shape.graphics.drawRect( +0.0*this.sizeW, -1.0*this.sizeH, this.sizeW, this.sizeH );
+            shape.graphics.drawRect( +0.0*this.sizeW, +0.0*this.sizeH, this.sizeW, this.sizeH );
             break;
         }
-        display.graphics.endFill();
+        shape.graphics.endFill();
     }
 
     setBody( px:number, py:number, type:number ){
@@ -78,13 +81,31 @@ class Block extends PhysicsObject{
     }
 
     fixedUpdate() {
-        if( this.display.y >= Util.height ){
-            new GameOver();
-            Player.I.setStateNone();
-            PhysicsObject.deltaScale = 0.05;
-            this.destroy();
-        }
         Camera2D.transform( this.display );
+
+        if( this.py >= Util.height ){
+            if( Player.I.state != Player.I.stateNone ){
+                new GameOver();
+                Player.I.setStateNone();
+                PhysicsObject.deltaScale = 0.1;
+            }
+            const r = this.sizeH * Camera2D.scale;
+            for( let i=0 ; i<4 ; i++ ) {
+                let a = rand() * Math.PI;   // 上方向のみ
+                let vx =  Math.cos( a );
+                let vy = -Math.sin( a );
+                let rv = r * ( 2 + i*0.5 );
+                new EffectLine(
+                    this.display.x + vx * r,
+                    this.display.y + vy * r,
+                    vx * rv,
+                    vy * rv,
+                    this.color );
+            }
+            new EffectCircle( this.display.x, this.display.y, r, this.color );
+            this.destroy();
+            return;
+        }
     }
 
     drop(){
