@@ -13,10 +13,10 @@ class Camera2D {
         Camera2D.scale = 1;
     }
 
-    static transform( display:egret.DisplayObject ){
+    static transform( display:egret.DisplayObject, objScale:number=1 ){
         display.x = (display.x - Camera2D.x) * Camera2D.scale;
         display.y = (display.y - Camera2D.y) * Camera2D.scale;
-        display.scaleX = display.scaleY = Camera2D.scale;
+        display.scaleX = display.scaleY = Camera2D.scale * objScale;
     }
 }
 

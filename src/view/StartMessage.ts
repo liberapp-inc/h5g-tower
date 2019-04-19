@@ -8,8 +8,8 @@ class StartMessage extends GameObject{
     constructor() {
         super();
 
-        this.texts[0] = Util.newTextField("ブロックを積み上げよう", Util.width / 20, FONT_COLOR, 0.5, 0.4, true, false);
-        this.texts[1] = Util.newTextField("スワイプで左右に移動", Util.width / 20, FONT_COLOR, 0.5, 0.5, true, false);
+        this.texts[0] = Util.newTextField("つみきタワー", Util.width / 18, FONT_COLOR, 0.5, 0.4, true, false);
+        this.texts[1] = Util.newTextField("つみきをつかんで移動・離して落とせ", Util.width / 20, FONT_COLOR, 0.5, 0.5, true, false);
         this.texts.forEach( text =>{ GameObject.display.addChild( text ); });
 
         GameObject.display.once(egret.TouchEvent.TOUCH_TAP, this.tap, this);

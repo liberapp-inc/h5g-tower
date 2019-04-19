@@ -6,6 +6,7 @@ class Button extends GameObject{
     text:egret.TextField = null;
     onTap:()=>void = null;
 
+    press:boolean = false;
     touch:boolean = false;
     x:number = 0;
     y:number = 0;
@@ -49,12 +50,14 @@ class Button extends GameObject{
     update() {
         let scale = this.touch ? 1.1 : 1.0;
         this.display.scaleX = this.display.scaleY = ( this.display.scaleX + (scale - this.display.scaleX) * 0.25 );
+        this.press = false;
     }
 
     // touch
     touchBegin(e:egret.TouchEvent) {
         this.x = e.stageX;
         this.y = e.stageY;
+        this.press = true;
         this.touch = true;
     }
     touchMove(e:egret.TouchEvent) {

@@ -62,6 +62,7 @@ class Player extends GameObject{
         this.rotateButton = new Button("↻", Util.height/16, BACK_COLOR, 0.10, 0.10, 0.2, 0.1, FONT_COLOR, 1.0, this.onTapRotate );
     }
     stateHold(){
+        if( this.swipeButton.press ) this.block.scale = 1.1;
         this.block.body.angle += (this.blockAngle - this.block.body.angle) * 0.2;
 
         if( this.swipeButton.touch ){

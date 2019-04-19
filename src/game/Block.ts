@@ -7,6 +7,7 @@ class Block extends PhysicsObject{
     sizeW:number;
     sizeH:number;
     color:number;
+    scale:number = 1;
 
     constructor( px:number, py:number, type:number ) {
         super();
@@ -81,7 +82,8 @@ class Block extends PhysicsObject{
     }
 
     fixedUpdate() {
-        Camera2D.transform( this.display );
+        Camera2D.transform( this.display, this.scale );
+        this.scale += (1 - this.scale) * 0.1;
 
         if( this.py >= Util.height ){
             if( Player.I.state != Player.I.stateNone ){
